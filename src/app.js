@@ -1,58 +1,26 @@
-//import productManager from 'productManager.js';
 // Importar express
 import express from 'express';
+import { productRouter } from './routers/products.router.js';
+import { cartRouter } from './routers/cart.router.js'
 
-import productManager from "./productManager.js";
-
-const pm = new productManager("productos.json");
-
-const test = async () => {
-    try{
-        await pm.addProduct('zapatilla', 'zapatilla de lujo', 300, 'Sin imagen', '123-R', 15);
-        await pm.addProduct('zapatilla2', 'zapatilla de lujo2', 200, 'Sin imagen2', '123-R2', 12);
-        await pm.addProduct('Buzo', 'Buzos escolares', 400, 'Sin imagen2', '123-R3', 13);
-        await pm.addProduct('Polo', 'Polos escolares', 500, 'Sin imagen2', '123-R4', 14);
-        await pm.addProduct('Short', 'Shorts Escolares', 600, 'Sin imagen2', '123-R5', 16);
-    }catch(err){
-        console.log(err.message)
-    }
-    
-}
-
-//test();
-
-const app = express();
 const port = 8080;
+
+// Creamos la aplicación de express que se encargará de manejar las peticiones HTTP a nuestro servidor 
+const app = express();
+
+// Middleware para poder obtener los datos que se envían desde el cliente al servidor 
+app.use(express.json());
 
 // Utilizamos el middleware para parsear los datos de la petición
 app.use(express.urlencoded({ extended: true }));
 
+// express.static es un middleware que nos permite servir archivos estáticos como imágenes, archivos CSS, archivos JS, etc.
+// Le indicamos a express que la carpeta public contiene archivos estáticos
+app.use(express.static("public"));
 
 // Definir las rutas
-
-app.get('/products', async (req, res) => {
-  // Obtener el parámetro limit de la query
-  // definir variable limit, si no viene en la query, usar 10
-  const limit = req.query.limit || 10;
-  // Obtener los productos , usando getProductos de productManager; se pone como await porque es una promesa
-  const products = await pm.getProducts();
-  // Enviar los productos como respuesta, usando res.send
-  // products.slice sirve para cortar el arreglo de productos, desde el 0 hasta el límite
-  res.send(products.slice(0, limit));
-});
-
-
-app.get('/products/:id', async (req, res) => {
-  // Obtener el id de los parámetros de la ruta; usando req.params (es un objeto) y el nombre del parámetro (id) como clave del objeto 
-  const id = Number(req.params.id);
-  // Obtener el producto por id, usando getProductById de productManager
-  try {
-    const product = await pm.getProductById(id);
-    res.send(product);
-  } catch (err) {
-    res.status(404).send({ error: 'Producto no encontrado' });
-  }
-});
+app.use('/api/products', productRouter);
+app.use('/api/carts', cartRouter);
 
 // Iniciar el servidor
 app.listen(port, () => {

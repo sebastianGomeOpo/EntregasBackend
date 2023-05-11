@@ -53,7 +53,6 @@ class productManager {
             thumbnail,
             code,
             stock,
-            participantes:[], // El atributo participantes es un arreglo vacio por que al crear un product no hay participantes
         };
         // Agregamos el ID al product
         product.id = this.#getID(); // Otra forma de agregar el id al product
@@ -70,6 +69,7 @@ class productManager {
                 throw new Error('Error al guardar el archivo');
             }
         });
+        return product;
     };
 
     // Metodo privado que incrementa en 1 el valor de ID y lo retorna
