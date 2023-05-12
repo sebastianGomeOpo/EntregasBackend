@@ -41,7 +41,7 @@ class productManager {
 	 * @param {Date} fecha Fecha del product
 	 */
 
-    async addProduct(title, description, price, thumbnail, code, stock){
+    async addProduct(title, description, price, thumbnail, code, stock, imagePaths){
         // Se lee el archivo para obtener los productos actuales
         const products = await this.getProducts();
         // Creamos un objeto de tipo product
@@ -53,6 +53,7 @@ class productManager {
             thumbnail,
             code,
             stock,
+            images:imagePaths,
         };
         // Agregamos el ID al product
         product.id = this.#getID(); // Otra forma de agregar el id al product
