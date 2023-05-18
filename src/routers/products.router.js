@@ -24,8 +24,8 @@ productRouter.get('/', async (req, res) => {
 
 // Ruta GET para obtener un producto por su id
 productRouter.get('/:pid', async (req, res) => {
-    // Obtener el id de los parámetros de la ruta; usando req.params (es un objeto) y el nombre del parámetro (id) como clave del objeto 
-    const id = Number(req.params.pid);
+  // Obtener el id de los parámetros de la ruta; usando req.params (es un objeto) y el nombre del parámetro (id) como clave del objeto 
+  const id = Number(req.params.pid);
   // Obtener el producto por id, usando getProductById de productManager
     try {
     const product = await pm.getProductById(id);
@@ -37,19 +37,36 @@ productRouter.get('/:pid', async (req, res) => {
 
 
 // Ruta POST para guardar un producto
-productRouter.post("/", imgUploader.array("thumbnail"), async (req, res) => {
+productRouter.post("/", imgUploader.array("img[]"), async (req, res) => {
+  // Estructura para validar datos y que no sean undefined
+  const validationRules =[
+    { field: 'title', type: 'string', message: 'El título es obligatorio y debe ser una cadena de texto' },
+        { field: 'description', type: 'string', message: 'La descripción es obligatoria y debe ser una cadena de texto' },
+        { field: 'price', type: 'number', message: 'El precio es obligatorio y debe ser un número' },
+        { field: 'code', type: 'string', message: 'El código es obligatorio y debe ser una cadena de texto' },
+        { field: 'stock', type: 'number', message: 'El stock es obligatorio y debe ser un número' },
+  ]
+  // Validar que los datos no sean undefined y que sean del tipo correcto
+  for (let rule of validationRules) {
+        const value = req.body[rule.field];
+        if (value === undefined || typeof value !== rule.type) {
+            return res.status(400).json({ error: rule.message });
+        }
+    }
+
   try {
       const body = req.body;
-      // thumbnail = req.file.filename;
+      const imagePaths = req.files.map(file => file.path);
 
       // Guardar el producto, usando addProduct de productManager
       const product = await pm.addProduct(
           body.title,
           body.description,
-          body.price,
           body.code,
+          body.price,
+          // body.status,
           body.stock,
-          // thumbnail,
+          imagePaths,
       );
       // Enviar el producto como respuesta
       res.status(201).send(product);
@@ -59,7 +76,7 @@ productRouter.post("/", imgUploader.array("thumbnail"), async (req, res) => {
 });
 
 // Ruta PUT para actualizar un producto por su id
-productRouter.put('/:pid', imgUploader.array("thumbnail"), async (req, res) => {
+productRouter.put('/:pid', imgUploader.array("img[]"), async (req, res) => {
     // Obtener el id de los parámetros de la ruta; usando req.params (es un objeto) y el nombre del parámetro (id) como clave del objeto
     const id = Number(req.params.pid);
     // Obtener el body de la petición, usando req.body
