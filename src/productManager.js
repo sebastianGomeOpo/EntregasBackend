@@ -41,22 +41,19 @@ class productManager {
 	 * @param {Date} fecha Fecha del product
 	 */
 
-    async addProduct(title, description, price, thumbnail, code, stock, imagePaths){
+    async addProduct(title, description, price, imagePath, code, stock){
         // Se lee el archivo para obtener los productos actuales
         const products = await this.getProducts();
         // Creamos un objeto de tipo product
         const product = {
-            // El atributo id se genera automaticamente con el valor del atributo privado `#id` y se incrementa en 1
             title,
             description,
             price,
-            thumbnail,
             code,
             stock,
-            images:imagePaths,
+            images: imagePath,
+            id: this.#getID(),
         };
-        // Agregamos el ID al product
-        product.id = this.#getID(); // Otra forma de agregar el id al product
         
         // Validamos que el codigo no este repetido
         if (await this.isCodeRepeated(code)) {

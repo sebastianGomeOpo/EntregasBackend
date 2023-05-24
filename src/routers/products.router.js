@@ -37,7 +37,7 @@ productRouter.get('/:pid', async (req, res) => {
 
 
 // Ruta POST para guardar un producto
-productRouter.post("/", imgUploader.array("img[]"), async (req, res) => {
+productRouter.post("/", imgUploader.array("thumbnail"), async (req, res) => {
   // Estructura para validar datos y que no sean undefined
   const validationRules =[
     { field: 'title', type: 'string', message: 'El título es obligatorio y debe ser una cadena de texto' },
@@ -48,25 +48,39 @@ productRouter.post("/", imgUploader.array("img[]"), async (req, res) => {
   ]
   // Validar que los datos no sean undefined y que sean del tipo correcto
   for (let rule of validationRules) {
-        const value = req.body[rule.field];
+        let value = req.body[rule.field];
+        if (rule.type === 'number') {
+          value = Number(value);
+          if (isNaN(value)) {
+              return res.status(400).json({ error: rule.message });
+          }
+      } else if (typeof value !== rule.type) {
+          return res.status(400).json({ error: rule.message });
+      }
         if (value === undefined || typeof value !== rule.type) {
             return res.status(400).json({ error: rule.message });
         }
+    // Actualiza el valor en el cuerpo de la solicitud
+    req.body[rule.field] = value;
     }
 
   try {
       const body = req.body;
-      const imagePaths = req.files.map(file => file.path);
-
+      // Obtener los paths de las imágenes subidas, usando req.files
+      let imagePaths = '';
+      // Si hay archivos, se obtienen los paths y si no hay, se deja el arreglo vacío
+      if (req.files) {
+        imagePaths = req.files.map(file => file.path);
+      }
       // Guardar el producto, usando addProduct de productManager
       const product = await pm.addProduct(
           body.title,
           body.description,
-          body.code,
           body.price,
-          // body.status,
-          body.stock,
           imagePaths,
+          // body.status,
+          body.code,
+          body.stock,
       );
       // Enviar el producto como respuesta
       res.status(201).send(product);

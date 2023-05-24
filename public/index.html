@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,22 +9,15 @@
 <body>
     <h1>Hello World!</h1>
     <!-- Mediante los atributos method ="post" y action="/api/products" determinan como enviar los datos del formulario al servidor y a qué ruta se envían. -->
-    <!-- Utilizar el método POST es apropiado cuando envías información confidencial o modificas datos en el servidor (por ejemplo, agregar o actualizar registros en una base de datos). -->
-    <form method="post" action="/api/products" enctype="multipart/form-data">
+    <form method="post" action="http://localhost:8080/api/products" enctype="multipart/form-data">
         <!-- El elemento input es un componente del formulario, que permite ingresar datos -->
-        <!-- El atributo type = especifica el tipo de dato que debe entrar -->
-        <!-- El atributo name = especifica el nombre del elemento -->
-        <!-- El atributo placeholder = especifica una breve descripción del dato que debe entrar -->
-        <!-- El atributo required indica que este campo es obligatorio -->
-        <!-- El atributo id , proporcio una identificador único para el elemento de la pagina. Esto es util para el backen en JS -->
         <input type="text" required id="title" name="title" placeholder="Nombre de Tu Producto" />
         <input type="text" required id="description" name="description" placeholder="Descripción del producto" />
         <input type="text" required id="code" name="code" placeholder="Código del producto" />
         <input type="number" required id="price" name="price" placeholder="Precio del producto" />
         <input type="number" required id="stock" name="stock" placeholder="Stock del producto" />
         <input type="text" required id="category" name="category" placeholder="Categoría del producto" />
-        <input type="file" required id="thumbnail" name="img[]" multiple />
-        <!-- <input type="boolean" required id="active" name="active" placeholder="Activo" /> -->
+        <input type="file" required id="thumbnail" name="thumbnail" />
         <button type="submit">Enviar</button>
     </form>
 </body>
